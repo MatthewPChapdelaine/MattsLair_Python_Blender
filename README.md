@@ -1,139 +1,383 @@
 # Matts Lair Python Blender
 
-This project contains a Blender Python script that builds a stylized social club / nightlife venue called "Matt's Lair" and exports it as an FBX for downstream use in Unity and VRChat development.
+This project contains a Blender Python script that procedurally generates a stylized social club / nightlife scene called "Matt's Lair" and exports it as an FBX for use in Unity and VRChat workflows.
 
-The script is designed to be run directly inside Blender's scripting editor. It creates a complete environment from code, including floors, walls, stairs, mezzanine deck, neon accents, skylight roof, and a scale reference object.
+The script is designed to be executed directly inside Blender's scripting editor. It creates a complete environment from code, including floors, walls, stairs, a mezzanine deck, neon trim, a glass roof, and a human-scale reference object.
 
-## Project purpose
+The purpose of this repository is not just to generate one static model, but to teach a practical workflow for:
 
-The goal of this script is to automate environment generation for a 3D club interior with:
+- building a game-ready environment in Blender via Python
+- procedural geometry generation
+- material setup and emission control
+- UV generation for export and lightmaps
+- FBX export for Unity / VRChat
+- editable scene logic that can be customized for your own project
 
-- A dance floor / portal zone
-- A VIP / "Lair" lounge area
-- A spawn lobby
-- A mezzanine / catwalk
-- A glass skylight roof
-- PBR materials and consistent UVs for export
+---
 
-The output is intended to be imported into game engines or further edited in 3D software.
+## Project Overview
 
-## Files
+The generated environment includes:
 
-- `MattsLair.py` — Blender script that generates the full 3D scene
-- `README.md` — project documentation
+- a dance floor / portal zone
+- DJ stage and console area
+- a VIP / "Lair" lounge
+- a spawn lobby
+- a mezzanine catwalk
+- a skylight roof
+- green metallic architectural surfaces and neon accents
 
-## What the script does
+The whole environment is generated through a single script (`MattsLair.py`) rather than by manually placing objects in the Blender UI.
 
-When executed in Blender, the script performs the following actions:
+---
 
-1. Resets the Blender scene to factory defaults
-2. Configures the scene to use metric units
-3. Creates a dedicated collection named `Matts_Lair_Club`
-4. Builds PBR materials for floors, metal, portal glow, neon trim, and glass
-5. Creates architectural geometry with custom mesh helpers
-6. Generates walls, stairs, platforms, rails, and floor polygons
-7. Applies UVs and normal fixes for export readiness
-8. Exports the selected mesh scene to an FBX file in the user's home directory
+## File Structure
 
-## Script structure
+- `MattsLair.py` — procedural Blender scene generator and FBX exporter
+- `README.md` — documentation, tutorials, and usage guidance
 
-The script is divided into logical sections:
+---
 
-### 1. Scene setup
+## Tutorial 1: Installing Blender and Preparing Your Workspace
 
-- Resets Blender to a clean state
-- Sets the scene unit system to metric
-- Sets a 1:1 metric scale
-- Creates a new collection for the club environment
+### Goal
 
-### 2. PBR materials
+Set up the software needed to run the script correctly.
 
-The script creates reusable materials:
+### Requirements
 
-- `Mat_Green_Metal` — green metal surface
-- `Mat_Dark_Floor` — dark club floor material
-- `Mat_Purple_Portal` — purple glow portal material with emission
-- `Mat_Neon_Green` — bright neon green material with emission
-- `Mat_Skylight_Glass` — translucent glass material
+- Blender 3.x or 4.x
+- A computer capable of running Blender normally
+- Basic familiarity with the Blender interface is helpful, but not required
 
-These materials are created with Blender node-based Principled BSDF settings and support both Blender 3.x and 4.x.
+### Steps
 
-### 3. Mesh generation helpers
+1. Download Blender from the official Blender website.
+2. Install the version you prefer for your platform.
+3. Launch Blender.
+4. If you are new to Blender, open a new file and save it to a project folder.
+5. Keep the script file `MattsLair.py` in a directory you can easily access.
 
-The script includes helper functions for:
+### Recommended setup
 
-- `generate_box_uv0()` — creates UVs suitable for box-like planar faces
-- `create_prism_from_2d()` — converts a 2D polygon into a 3D prism with top/bottom faces and wall caps
-- `_wall_segment()` — creates a wall segment between two points
-- `create_wall_perimeter()` — creates connected wall segments around a polygon
-- `create_rail()` — creates a light rail or barrier object
-- `create_stairs()` — creates a 3D stair run with multiple steps
+- Use a clean Blender scene for testing
+- Keep a dedicated folder named something like `MattsLair_Project`
+- Save your Blender project early so you do not lose progress
 
-### 4. Architectural zones
+### Why this matters
 
-The environment is composed of several distinct areas:
+This project depends on Blender's Python API. Running the script in a clean environment makes debugging easier and prevents accidental interference from other objects or scene settings.
 
-#### A. Purple portal triangle / dance floor
+---
 
-- Portal floor polygon
-- Outer wall ring with an open edge for access
-- DJ stage platform and console desk
+## Tutorial 2: Opening the Script in Blender
 
-#### B. VIP lounge / lair zone
+### Goal
 
-- Elevated lounge floor
-- Outer wall perimeter
-- Bar counter and neon trim
-- Stairs connecting the dance floor and lobby to the VIP area
+Learn how to run the script inside Blender.
 
-#### C. Spawn lobby
+### Steps
 
-- Lobby floor
-- Surrounding walls
-- Mezzanine catwalk around the lobby area
-- Grand staircase to the mezzanine deck
+1. Open Blender.
+2. Go to the `Scripting` workspace.
+3. Click `New` to create a new text block.
+4. Copy the full contents of `MattsLair.py` into the text editor.
+5. Press the `Run Script` button.
 
-#### D. Skylight roof
+### What happens
 
-- Glass roofing slab covering the full club footprint
+The script will:
 
-#### E. Scale reference
+- reset the scene
+- create a new `Matts_Lair_Club` collection
+- add all geometry and materials
+- apply UVs and normal fixes
+- export the result as an FBX to your home folder
 
-- A neon green avatar scale reference object
-- Includes a 175 cm human-scale reference to help with proportion evaluation
+### Important note
 
-### 5. UV and normal processing
+Running the script will replace the current Blender scene. This is intentional for a procedural generator. If you want to keep an existing scene, save it first or use a separate Blender file.
 
-Before export, the script:
+---
 
-- Ensures each mesh has at least two UV layers
-- Names them `UVMap` and `LightmapUV`
-- Enables smart UV projection for clean unwraps
-- Makes normals consistent to prevent shading problems before export
+## Tutorial 3: Understanding the Scene Generation Logic
 
-### 6. Export
+### Goal
 
-The script defines `export_vrc_fbx(export_path=None)`, which exports the selected meshes to an FBX using settings suitable for game export.
+Understand what the script is doing under the hood.
 
-Default export location:
+The script is organized into sections:
 
-- `~/Matts_Lair_Club.fbx`
+### 1. Scene cleanup and metric setup
 
-This means the file is written to the current user's home directory unless you pass in a custom path.
+```python
+bpy.ops.wm.read_factory_settings(use_empty=True)
+scene = bpy.context.scene
+scene.unit_settings.system = 'METRIC'
+scene.unit_settings.scale_length = 1.0
+```
 
-## How to run the script in Blender
+This clears the scene and ensures the environment uses metric units and a consistent scale.
 
-1. Open Blender
-2. Go to the `Scripting` workspace
-3. Click `New` to create a new text block
-4. Paste the contents of `MattsLair.py` into the editor
-5. Press `Run Script`
-6. Wait for the environment to generate
-7. The script will export the scene to `~/Matts_Lair_Club.fbx`
+### 2. Collection creation
 
-## Export behavior
+```python
+collection = bpy.data.collections.new("Matts_Lair_Club")
+scene.collection.children.link(collection)
+```
 
-The script exports with these settings:
+Everything generated by the script is placed into the `Matts_Lair_Club` collection.
+
+### 3. Material creation
+
+The script uses a helper function called `create_pbr_material()` to create Blender materials with Principled BSDF nodes.
+
+This is useful because the environment includes:
+
+- a dark floor material
+- metallic green walls
+- purple portal emission
+- neon green lighting accents
+- translucent skylight glass
+
+### 4. Mesh generation helpers
+
+The script builds geometry through several helper functions:
+
+- `create_prism_from_2d()`
+- `create_wall_perimeter()`
+- `create_rail()`
+- `create_stairs()`
+
+These functions allow the script to convert 2D floor outlines into 3D wall and platform geometry.
+
+### 5. Architectural layout
+
+The layout is built from a series of 2D polygon definitions that form the club footprint, VIP lounge, lobby, catwalk, and roof.
+
+This is one of the major benefits of procedural generation: once the floor plan is defined as coordinates, the rest of the environment is generated automatically.
+
+---
+
+## Tutorial 4: Working with 2D Polygon Layouts
+
+### Goal
+
+Learn how the floor plan is created and modified.
+
+The script defines many 2D points such as:
+
+```python
+portal_pts = [
+    (-2.0, -2.0),
+    (18.0, -3.5),
+    (2.0, -11.5),
+    (-2.5, -6.5)
+]
+```
+
+Each coordinate represents a point in the X/Y plane.
+
+### How to modify the layout
+
+If you want to change the club footprint, edit the points in one of these polygon arrays:
+
+- `portal_pts`
+- `dj_pts`
+- `lair_pts`
+- `bar_pts`
+- `spawn_pts`
+- `mezz_pts`
+- `roof_pts`
+
+### Example
+
+To widen a room, add or move coordinates in the polygon list. For example, increasing the X values will extend the room east-west, while changing Y values adjusts the north-south direction.
+
+### Important design note
+
+All created geometry is connected to a 2D polygon system. That means a single floor polygon can drive:
+
+- the floor surface
+- surrounding wall geometry
+- the roof or ceiling slab
+- platform placement
+
+This makes the script easier to edit than manually assembling every object by hand.
+
+---
+
+## Tutorial 5: Materials and PBR Workflow
+
+### Goal
+
+Understand how the environment gets its look.
+
+The script uses Blender's Principled BSDF material system to create realistic PBR-like materials.
+
+### Material definitions
+
+The main materials are:
+
+- `mat_green_metal` — metallic green surfaces
+- `mat_dark_floor` — dark flooring
+- `mat_purple_glow` — emission-based portal material
+- `mat_neon_green` — bright neon lighting accents
+- `mat_glass` — translucent roof material
+
+### Material creation function
+
+```python
+def create_pbr_material(name, base_color, metallic=0.0, roughness=0.5, emission_color=None, emission_strength=0.0, alpha=1.0):
+```
+
+This function configures:
+
+- Base Color
+- Metallic value
+- Roughness value
+- Emission Color
+- Emission Strength
+- Alpha (for glass-like transparency)
+
+### How to customize materials
+
+To change a material's look, edit the material creation calls, such as:
+
+```python
+mat_green_metal = create_pbr_material("Mat_Green_Metal", (0.04, 0.25, 0.06, 1.0), metallic=0.85, roughness=0.25)
+```
+
+You can change:
+
+- RGB color values
+- metallic strength
+- roughness value
+- emission strength
+
+### Practical example
+
+If you want brighter neon lights, increase the emission strength:
+
+```python
+mat_neon_green = create_pbr_material("Mat_Neon_Green", (0.1, 1.0, 0.1, 1.0), metallic=0.0, roughness=0.2,
+                                      emission_color=(0.15, 1.0, 0.15, 1.0), emission_strength=8.0)
+```
+
+---
+
+## Tutorial 6: Building Geometry with Helper Functions
+
+### Goal
+
+Learn how the scene is assembled from reusable generation functions.
+
+### `create_prism_from_2d()`
+
+This is one of the key functions. It takes:
+
+- a polygon outline
+- base Z height
+- extrusion height
+- a material
+
+It creates a prism-like object with top and bottom surfaces and side walls.
+
+This is used for:
+
+- club floor slabs
+- raised platforms
+- DJ booth and bar surfaces
+- roof slab
+
+### `create_wall_perimeter()`
+
+This function creates walls between points in a polygon loop. It can skip selected edges using `open_edges` to leave gaps, such as entrances or openings.
+
+Example:
+
+```python
+create_wall_perimeter("Zone_DanceFloor_Walls", portal_pts, 0.0, 6.5, 0.4, mat_green_metal, open_edges={3})
+```
+
+This creates a wall perimeter while leaving one edge open.
+
+### `create_rail()`
+
+This creates slim barrier rails for safety or visual separation between elevated platforms and walkways.
+
+### `create_stairs()`
+
+This generates stairs from a starting position and orientation. It can create multiple steps in a configured direction and with custom step dimensions.
+
+### Why these helpers matter
+
+They make the scene easy to adjust and extend. Instead of manually modeling each object, you define simple parameters and let the code do the building work.
+
+---
+
+## Tutorial 7: UV Mapping and Lightmap Prep
+
+### Goal
+
+Understand how the script prepares meshes for export and lighting.
+
+Before export, the script loops through every mesh in the collection and performs the following:
+
+1. ensures at least two UV layers exist
+2. names them `UVMap` and `LightmapUV`
+3. sets the active UV layer to `LightmapUV`
+4. applies a smart UV projection
+5. then returns to the base UV channel
+
+### Why this matters
+
+Game projects often require:
+
+- standard UVs for texture mapping
+- a second UV channel for lightmap baking
+- consistent normals for smooth shading
+
+### The code
+
+```python
+while len(obj.data.uv_layers) < 2:
+    obj.data.uv_layers.new()
+obj.data.uv_layers[0].name = "UVMap"
+obj.data.uv_layers[1].name = "LightmapUV"
+```
+
+This ensures a second UV layer is available for lighting workflows.
+
+### Normal consistency
+
+```python
+bpy.ops.mesh.normals_make_consistent(inside=False)
+```
+
+This helps prevent shading artifacts in game engines and improves exported mesh quality.
+
+---
+
+## Tutorial 8: FBX Export for Unity and VRChat
+
+### Goal
+
+Learn how the export process works and what the output is for.
+
+The script defines:
+
+```python
+def export_vrc_fbx(export_path=None):
+```
+
+If no path is provided, it exports to:
+
+```python
+~/Matts_Lair_Club.fbx
+```
+
+### Export settings used
 
 - `use_selection=True`
 - `object_types={'MESH'}`
@@ -146,28 +390,241 @@ The script exports with these settings:
 - `mesh_smooth_type='FACE'`
 - `bake_space_transform=True`
 
-This helps preserve the intended world scale and orientation for Unity/VRChat workflows.
+### Why these settings are useful
 
-## Notes and assumptions
+They keep the scene aligned with game engine conventions and prepare the file for import into Unity or VRChat tooling.
 
-- The script assumes you are running Blender with Python scripting enabled.
-- It uses Blender's built-in API and should work in Blender 3.x/4.x style environments.
-- The script automatically creates the club collection and does not require a template file.
-- It is intended as a procedural scene generator rather than a hand-authored mesh asset.
-- The generated FBX is suitable for engine import and further optimization if needed.
+### Custom export path example
 
-## Suggested workflow
+You can change the export destination by calling:
 
-- Run the script in Blender
-- Inspect the generated structural layout
-- Adjust any polygon points or material values directly in the script if needed
-- Re-export the FBX after edits
-- Import the FBX into Unity or VRChat project tooling
+```python
+export_vrc_fbx("/path/to/your/folder/CustomClub.fbx")
+```
 
-## Licensing / use
+### Example manual invocation
 
-This script is a procedural environment generator for personal / project-specific 3D development. Adapt and modify it as needed for your own Blender scenes and game projects.
+Add this at the bottom of the script or run it in the Blender console:
 
-## Quick summary
+```python
+export_vrc_fbx("/home/youruser/Desktop/MattsLairClub.fbx")
+```
 
-This project creates a complete club interior scene from code, including architecture, lighting-friendly UVs, material setup, and FBX export for game development. It is a compact procedural Blender environment generator intended to accelerate environment creation for a VRChat / Unity workflow.
+---
+
+## Tutorial 9: Importing the FBX into Unity
+
+### Goal
+
+Use the generated asset inside a Unity project.
+
+### Steps
+
+1. Open a Unity project.
+2. Drag the exported FBX into the `Assets` folder.
+3. Unity will automatically import the mesh and materials.
+4. Inspect the model in the Scene view.
+5. Apply any additional adjustments if needed.
+
+### Typical Unity workflow
+
+- set the model to static if it will not move
+- check scale in the importer window
+- configure materials for your pipeline
+- optimize geometry if needed for performance
+
+### VRChat-specific considerations
+
+- keep polygon counts reasonable
+- verify the scale is correct for avatars and world space
+- test the environment in a VRChat-compatible scene
+- ensure the build supports large spaces cleanly
+
+---
+
+## Tutorial 10: Customizing the Club Layout
+
+### Goal
+
+Teach you how to redesign the environment without reworking the entire system.
+
+### Basic editing workflow
+
+1. Open `MattsLair.py`.
+2. Find the zone polygon arrays.
+3. Adjust the points to change the shape and size.
+4. Re-run the script.
+5. Check the new layout in Blender.
+
+### Example customizations
+
+- make the dance floor larger
+- widen the VIP lounge
+- add a new room by creating a new polygon
+- move the DJ booth deeper into the dance zone
+- add more stairs or different staggered platforms
+
+### Example of creating a new platform
+
+```python
+new_platform_pts = [
+    (-5.0, 2.0),
+    (5.0, 2.0),
+    (5.0, 6.0),
+    (-5.0, 6.0)
+]
+create_prism_from_2d("My_Custom_Platform", new_platform_pts, 0.0, 0.5, mat_green_metal)
+```
+
+This gives you a starting point for new geometry without starting from scratch.
+
+---
+
+## Tutorial 11: Troubleshooting Common Issues
+
+### Problem: Script errors on run
+
+Possible causes:
+
+- wrong Blender version
+- a mismatch in Python API names
+- outdated script syntax
+- missing material setup or bad object references
+
+### Fix
+
+- open the Blender System Console
+- inspect the traceback carefully
+- verify the script is executed in the proper Blender context
+- rerun after saving the scene
+
+### Problem: Geometry does not appear
+
+Possible causes:
+
+- object is created but not linked into the collection
+- scene is empty because the script reset the scene
+- export is being done instead of previewing the model
+
+### Fix
+
+- check the `Outliner`
+- inspect the created collection
+- press `Home` or zoom to all objects in the viewport
+
+### Problem: UVs look incorrect or broken
+
+Possible causes:
+
+- UV layers not generated properly
+- mesh has weird normals
+- certain non-planar faces behave unexpectedly
+
+### Fix
+
+- verify the `UVMap` and `LightmapUV` layers exist
+- run the normal consistency step
+- inspect the object in Edit mode
+
+### Problem: FBX import looks scaled incorrectly
+
+Possible causes:
+
+- scene scale mismatch
+- Unity import settings not configured correctly
+- wrong export orientation
+
+### Fix
+
+- check the unit scale in Blender
+- confirm the FBX is imported with correct scale settings
+- use `apply_unit_scale` and `bake_space_transform` as included in the script
+
+---
+
+## Tutorial 12: Advanced Workflow Ideas
+
+Once you understand the base script, you can expand it in several ways:
+
+### Add decorative props
+
+- DJ booth equipment
+- neon signs
+- lamps
+- wall screens
+- seating
+- props and decorative walls
+
+### Add lighting logic
+
+Use Blender lights to simulate:
+
+- stage lights
+- ambient glow
+- purple portal light
+- practical fixtures
+
+### Add runtime functionality
+
+If you want to use the environment in a game engine, you can later add:
+
+- collision meshes
+- custom materials
+- object instancing
+- prefab generation
+
+### Add procedural variation
+
+Instead of one static club, you could create variant layouts with:
+
+- alternate floorplans
+- multiple branch rooms
+- different color palettes
+- alternate lighting moods
+
+---
+
+## Best Practices
+
+- Keep the scene clean before running the script
+- Save your Blender project before testing major changes
+- Name generated objects clearly so they are easy to identify in the Outliner
+- Test your exported FBX by importing it into Unity before finalizing your scene
+- Always keep a version of the script that you can revert to
+
+---
+
+## Learning Summary
+
+This project teaches a practical Blender + Python workflow for building a game environment from code. It demonstrates several important skills:
+
+- procedural generation from coordinate data
+- scene organization with collections
+- material creation and emission control
+- mesh generation with helper functions
+- UV preparation and normal cleanup
+- exporting and importing a production-ready asset
+
+By understanding this script, you gain a foundation for building many other procedural environments in Blender.
+
+---
+
+## Quick Start Checklist
+
+1. Install Blender
+2. Open the `Scripting` workspace
+3. Paste in `MattsLair.py`
+4. Run the script
+5. Inspect the generated club in 3D view
+6. Export FBX to your target folder
+7. Import into Unity or VRChat
+8. Adjust geometry and materials as needed
+9. Re-run the script for updated builds
+
+---
+
+## Conclusion
+
+This repository is a complete example of how to create a stylized club environment in Blender using Python. It is especially well suited for game design, worldbuilding, and VRChat scene development.
+
+The best way to learn from it is to modify small pieces of the code, re-run the script, and observe how the scene changes. That approach turns a generator script into a flexible design tool.
