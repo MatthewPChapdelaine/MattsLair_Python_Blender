@@ -1,4 +1,18 @@
+---
+title: Codebase Logic Design
+aliases:
+  - Repository Map
+  - Logic Map
+tags:
+  - architecture
+  - map
+  - blender
+  - unity
+---
+
 # Codebase Logic Design
+
+**Related notes:** [[README]], [[MattsLair.py]], [[MattsLairDesign]], [[Running MattsLair Blender Script and Exporting FBX]], [[MattsLair.canvas]]
 
 ## 1. Purpose
 
@@ -18,6 +32,7 @@ The three scripts do not import or call one another. Each is independently execu
 Project intent and navigation
 ├── README.md
 ├── MattsLairDesign.md
+├── Running MattsLair Blender Script and Exporting FBX.md
 └── character_context_mapping.md
     ├── Metatron interpretation ── metatron_mathematical_design.md
     │                            └── build_metatron_architecture.py
@@ -25,7 +40,8 @@ Project intent and navigation
                                  └── build_azazel_architecture.py
 
 Club design
-└── MattsLairDesign.md ── MattsLair.py ── Matts_Lair_Club.fbx
+├── MattsLairDesign.md ── MattsLair.py ── Matts_Lair_Club.fbx
+└── GDevelop 5 ── MattsLair.py ── Matts_Lair_Club.glb ── gdevelop5/MattsLairGDevelop.json
 
 Architecture design
 ├── Metatron guide + math ── build_metatron_architecture.py
@@ -53,6 +69,8 @@ The arrows show conceptual inputs and generated outputs, not Python imports. The
 | 8 | [build_azazel_architecture.py](./build_azazel_architecture.py) | Executable Azazel collection generator. |
 | 9 | [metatron_architecture_documentation.md](./metatron_architecture_documentation.md) | Metatron configuration, hierarchy, run instructions, and Unity guidance. |
 | 10 | [azazel_architecture_documentation.md](./azazel_architecture_documentation.md) | Azazel configuration, hierarchy, run instructions, and Unity guidance. |
+| 11 | [Running MattsLair Blender Script and Exporting FBX.md](./Running%20MattsLair%20Blender%20Script%20and%20Exporting%20FBX.md) | Headless, hosted, cloud, and Docker procedures for exporting the club FBX. |
+| 12 | [gdevelop5/](./gdevelop5/) | GDevelop 5 starter project, GLB asset location, and web game setup guidance. |
 
 The numbered mathematical and technical guides are complementary: mathematical documents explain why the coordinates and counts have their values; technical documents explain how to run and import the result.
 

@@ -1,4 +1,20 @@
+---
+title: Matts Lair Python Blender
+aliases:
+  - Project README
+  - Matts Lair
+tags:
+  - project
+  - blender
+  - unity
+  - vrchat
+  - overview
+---
+
 # Matts Lair Python Blender
+
+> [!abstract] Vault entry point
+> Use this note to choose a generator, open the repository map, or start a headless export.
 
 This project contains Blender Python generators for a stylized social club / broadcast lair called "Matt's Lair", a modular Metatron's Cube frame, and its contrasting Azazel Ashen Citadel. The architecture generators support Unity and VRChat workflows.
 
@@ -43,6 +59,8 @@ The club environment is generated through `MattsLair.py` rather than by manually
 - `azazel_mathematical_design.md` — Azazel coordinate, graph, and transform mathematics
 - `character_context_mapping.md` — basic definitions of Metatron and Azazel and the design rationale shared by both architecture guides
 - `codebase_logic_design.md` — logical reading order, generator execution flows, and Unity data path
+- `Running MattsLair Blender Script and Exporting FBX.md` — Codespaces, GitHub Actions, cloud, Docker, and headless export guide
+- `gdevelop5/` — GDevelop 5 starter project and GLB workflow
 - `README.md` — documentation, tutorials, and usage guidance
 
 ---
@@ -50,6 +68,16 @@ The club environment is generated through `MattsLair.py` rather than by manually
 ## Codebase Logic Map
 
 For the complete reading order, each generator's execution sequence, scene-safety behavior, and Blender-to-Unity data flow, see [codebase_logic_design.md](./codebase_logic_design.md).
+
+## Running the Club Generator Headlessly
+
+For Blender installation options and unattended FBX export, see [Running MattsLair Blender Script and Exporting FBX](./Running%20MattsLair%20Blender%20Script%20and%20Exporting%20FBX.md). The guide covers GitHub Codespaces, GitHub Actions, rented CPU instances, and Docker. The club script requires no GPU because it performs geometry construction and export only.
+
+In Obsidian, open [[MattsLair.canvas]] to navigate the project and follow backlinks from [[Running MattsLair Blender Script and Exporting FBX]].
+
+## GDevelop 5 Workflow
+
+GDevelop 5 can load the environment as an embedded-binary [GLB asset](https://wiki.gdevelop.io/gdevelop5/objects/3d-model/). Export `Matts_Lair_Club.glb`, place it in `gdevelop5/assets/`, and open `gdevelop5/MattsLairGDevelop.json`. The FBX remains the Unity/VRChat format; GLB is the web-native GDevelop format.
 
 ## Optional Metatron Architecture Generator
 

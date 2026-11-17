@@ -1,4 +1,18 @@
+---
+title: Matt's Lair Integrated Design Vision
+aliases:
+  - Matt's Lair Design
+  - Club Design
+tags:
+  - design
+  - club
+  - vrchat
+  - spatial-design
+---
+
 # Matt's Lair: Integrated Design Vision
+
+**Related notes:** [[README]], [[Running MattsLair Blender Script and Exporting FBX]], [[MattsLair.py]], [[codebase_logic_design]]
 
 This document is the design basis for the overall Matt's Lair concept and should be read as the narrative and spatial layer that sits on top of the procedural Blender environment described in the project README. The goal is to unify the club-world architecture, the villain-showman persona, and the VRChat-ready social experience into one coherent design.
 
@@ -132,6 +146,8 @@ The design needs to remain compatible with the project's actual technical goals:
 - future expansion into a richer virtual environment without rebuilding the whole concept from scratch
 
 The design language should therefore stay simple enough to translate directly into reusable geometry and materials while preserving the world identity.
+
+For unattended scene generation and export, use [Running MattsLair Blender Script and Exporting FBX](./Running%20MattsLair%20Blender%20Script%20and%20Exporting%20FBX.md). It covers hosted and local headless execution without changing the club's design or scene-reset behavior.
 
 ## 9. Summary
 

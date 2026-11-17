@@ -372,5 +372,27 @@ def export_vrc_fbx(export_path=None):
     print(f"[OK] Matts Lair Club built and exported to: {export_path}")
     return export_path
 
+def export_gdevelop_glb(export_path=None):
+    if export_path is None:
+        export_path = os.path.join(os.path.expanduser("~"), "Matts_Lair_Club.glb")
+
+    export_dir = os.path.dirname(os.path.abspath(export_path))
+    os.makedirs(export_dir, exist_ok=True)
+
+    bpy.ops.object.select_all(action='DESELECT')
+    for obj in collection.objects:
+        if obj.type == 'MESH' and obj.name != "VRC_Avatar_Scale_Ref_175cm":
+            obj.select_set(True)
+
+    bpy.ops.export_scene.gltf(
+        filepath=export_path,
+        export_format='GLB',
+        use_selection=True,
+        export_apply=True,
+        export_yup=True
+    )
+    print(f"[OK] Matts Lair Club built and exported to: {export_path}")
+    return export_path
+
 if __name__ == "__main__":
     export_vrc_fbx()

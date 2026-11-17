@@ -1,0 +1,118 @@
+{
+  "nodes": [
+    {
+      "id": "project",
+      "type": "file",
+      "file": "README.md",
+      "x": -520,
+      "y": -220,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "logic",
+      "type": "file",
+      "file": "codebase_logic_design.md",
+      "x": -120,
+      "y": -220,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "design",
+      "type": "file",
+      "file": "MattsLairDesign.md",
+      "x": 280,
+      "y": -220,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "headless",
+      "type": "file",
+      "file": "Running MattsLair Blender Script and Exporting FBX.md",
+      "x": -520,
+      "y": 100,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "club",
+      "type": "file",
+      "file": "MattsLair.py",
+      "x": -120,
+      "y": 100,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "metatron",
+      "type": "file",
+      "file": "metatron_architecture_documentation.md",
+      "x": 280,
+      "y": 100,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "azazel",
+      "type": "file",
+      "file": "azazel_architecture_documentation.md",
+      "x": 680,
+      "y": 100,
+      "width": 320,
+      "height": 220
+    },
+    {
+      "id": "gdevelop",
+      "type": "file",
+      "file": "gdevelop5/README.md",
+      "x": -920,
+      "y": 100,
+      "width": 320,
+      "height": 220
+    }
+  ],
+  "edges": [
+    {
+      "id": "project-logic",
+      "fromNode": "project",
+      "toNode": "logic"
+    },
+    {
+      "id": "project-design",
+      "fromNode": "project",
+      "toNode": "design"
+    },
+    {
+      "id": "logic-headless",
+      "fromNode": "logic",
+      "toNode": "headless"
+    },
+    {
+      "id": "logic-club",
+      "fromNode": "logic",
+      "toNode": "club"
+    },
+    {
+      "id": "logic-metatron",
+      "fromNode": "logic",
+      "toNode": "metatron"
+    },
+    {
+      "id": "logic-azazel",
+      "fromNode": "logic",
+      "toNode": "azazel"
+    },
+    {
+      "id": "design-club",
+      "fromNode": "design",
+      "toNode": "club"
+    },
+    {
+      "id": "headless-gdevelop",
+      "fromNode": "headless",
+      "toNode": "gdevelop"
+    }
+  ]
+}
