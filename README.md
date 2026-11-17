@@ -1,8 +1,8 @@
 # Matts Lair Python Blender
 
-This project contains a Blender Python script that procedurally generates a stylized social club / broadcast lair called "Matt's Lair" and exports it as an FBX for use in Unity and VRChat workflows.
+This project contains Blender Python generators for a stylized social club / broadcast lair called "Matt's Lair", a modular Metatron's Cube frame, and its contrasting Azazel Ashen Citadel. The architecture generators support Unity and VRChat workflows.
 
-The script is designed to be executed directly inside Blender's scripting editor. It creates a complete environment from code, including a social spawn lobby, a central signal / portal floor, a DJ broadcast zone, a VIP lair lounge, a mezzanine deck, neon trim, a glass roof, and a human-scale reference object. The design now aligns with the updated concept of a club world that feels like a media-controlled, theatrical base of operations rather than a generic nightlife room.
+The main club generator is designed to run directly inside Blender's scripting editor. It creates a complete environment from code, including a social spawn lobby, a central signal / portal floor, a DJ broadcast zone, a VIP lair lounge, a mezzanine deck, neon trim, a glass roof, and a human-scale reference object. The design now aligns with the updated concept of a club world that feels like a media-controlled, theatrical base of operations rather than a generic nightlife room.
 
 The purpose of this repository is not just to generate one static model, but to teach a practical workflow for:
 
@@ -27,14 +27,46 @@ The generated environment includes:
 - a skylight roof and premium architectural shell
 - green metallic surfaces, cyan signal lighting, and crimson-heavy accent tones
 
-The whole environment is generated through a single script (`MattsLair.py`) rather than by manually placing objects in the Blender UI, and it now reinforces the integrated design language described in the design document.
+The club environment is generated through `MattsLair.py` rather than by manually placing objects in the Blender UI, and reinforces the integrated design language described in the design document. `build_metatron_architecture.py` is an optional, independent generator for a 13-node, 78-strut frame; it does not replace or modify the club scene.
 
 ---
 
 ## File Structure
 
 - `MattsLair.py` — procedural Blender scene generator and FBX exporter
+- `MattsLairDesign.md` — narrative and spatial design direction for the club
+- `build_metatron_architecture.py` — standalone Metatron frame generator
+- `metatron_architecture_documentation.md` — architecture generator specification and Unity setup
+- `metatron_mathematical_design.md` — Metatron coordinate, graph, and transform mathematics
+- `build_azazel_architecture.py` — standalone Ashen Citadel generator, designed as a foil to the Metatron frame
+- `azazel_architecture_documentation.md` — Azazel generator layout, configuration, and Unity setup
+- `azazel_mathematical_design.md` — Azazel coordinate, graph, and transform mathematics
+- `character_context_mapping.md` — basic definitions of Metatron and Azazel and the design rationale shared by both architecture guides
+- `codebase_logic_design.md` — logical reading order, generator execution flows, and Unity data path
 - `README.md` — documentation, tutorials, and usage guidance
+
+---
+
+## Codebase Logic Map
+
+For the complete reading order, each generator's execution sequence, scene-safety behavior, and Blender-to-Unity data flow, see [codebase_logic_design.md](./codebase_logic_design.md).
+
+## Optional Metatron Architecture Generator
+
+The architecture generator creates a `Metatron_Architecture` collection with 13 shared-mesh node hubs and 78 shared-mesh struts, grouped into radial, inner-ring, outer-ring, and cross-lattice subsets. Its geometry and export settings are configured at the top of `build_metatron_architecture.py`. The symbolic context is interpretive; see `character_context_mapping.md` and the [mathematical design](./metatron_mathematical_design.md).
+
+Run it from Blender's **Scripting** workspace in a scene where you want the collection added. Unlike `MattsLair.py`, it does not reset the scene. The default configuration builds the collection without exporting; set `AUTO_EXPORT_FBX = True` after saving the `.blend` file to export beside it. For detailed hierarchy, geometry, collider, and Unity guidance, see `metatron_architecture_documentation.md`.
+
+For headless export, run the script and then export only its collection (so unrelated objects in Blender's default scene are not included):
+
+```bash
+blender -b -P build_metatron_architecture.py --python-expr \
+"import bpy; c=bpy.data.collections['Metatron_Architecture']; bpy.ops.object.select_all(action='DESELECT'); [o.select_set(True) for o in c.objects]; bpy.context.view_layer.objects.active=c.objects['Metatron_Architecture_Root']; bpy.ops.export_scene.fbx(filepath='./Metatron_World_Frame.fbx', use_selection=True, apply_scale_options='FBX_SCALE_ALL', axis_forward='-Z', axis_up='Y', object_types={'EMPTY', 'MESH'}, mesh_smooth_type='FACE')"
+```
+
+## Optional Azazel Architecture Generator
+
+`build_azazel_architecture.py` builds a vertical, sparse counterpart to the Metatron frame: a central citadel, five watchtowers, five radial causeways, and a four-sided broken outer ring. The gap is intentional, contrasting Metatron's complete planar lattice with an open, fractured silhouette. These are artistic interpretations, not canonical religious depictions. See `azazel_architecture_documentation.md` for configuration, hierarchy, and Unity/VRChat setup, [its mathematical design](./azazel_mathematical_design.md), and `character_context_mapping.md` for the character definitions behind the contrast.
 
 ---
 
