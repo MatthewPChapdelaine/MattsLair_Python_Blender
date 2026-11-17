@@ -55,6 +55,10 @@ mat_purple_glow = create_pbr_material("Mat_Purple_Portal", (0.12, 0.02, 0.28, 1.
                                       emission_color=(0.35, 0.05, 0.85, 1.0), emission_strength=2.5)
 mat_neon_green  = create_pbr_material("Mat_Neon_Green",  (0.1, 1.0, 0.1, 1.0),   metallic=0.0,  roughness=0.2,
                                       emission_color=(0.15, 1.0, 0.15, 1.0), emission_strength=4.0)
+mat_cyan_signal = create_pbr_material("Mat_Cyan_Signal", (0.03, 0.32, 0.34, 1.0), metallic=0.2, roughness=0.15,
+                                     emission_color=(0.1, 0.95, 1.0, 1.0), emission_strength=3.0)
+mat_crimson_void = create_pbr_material("Mat_Crimson_Void", (0.26, 0.04, 0.06, 1.0), metallic=0.3, roughness=0.35,
+                                      emission_color=(0.58, 0.05, 0.09, 1.0), emission_strength=0.8)
 mat_glass       = create_pbr_material("Mat_Skylight_Glass", (0.05, 0.1, 0.15, 1.0), metallic=0.1, roughness=0.05, alpha=0.3)
 
 # -------------------------------------------------------------------------
@@ -160,6 +164,54 @@ def create_stairs(name, start_pos, yaw_deg, width, total_height, run_length, ste
         step.data.materials.append(material)
         link_obj(step)
 
+
+def create_signal_ring(name, location, radius, thickness, material, rotation=(0.0, 0.0, 0.0), depth=0.12):
+    bpy.ops.mesh.primitive_torus_add(major_radius=radius, minor_radius=thickness, location=location, rotation=rotation)
+    ring = bpy.context.active_object
+    ring.name = name
+    ring.data.materials.append(material)
+    ring.scale = (1.0, 1.0, depth)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    link_obj(ring)
+    return ring
+
+
+def create_text_sign(name, text, location, material, rotation=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0), size=0.35):
+    font_curve = bpy.data.curves.new(type='FONT', name=f"{name}_Font")
+    font_curve.body = text
+    font_curve.align_x = 'CENTER'
+    font_curve.align_y = 'CENTER'
+    font_curve.size = size
+    font_curve.extrude = 0.04
+    font_curve.bevel_depth = 0.01
+
+    obj = bpy.data.objects.new(name, font_curve)
+    obj.location = location
+    obj.rotation_euler = rotation
+    obj.scale = scale
+    obj.data.materials.append(material)
+    link_obj(obj)
+    return obj
+
+
+def create_wave_console(name, location, material):
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=location)
+    console = bpy.context.active_object
+    console.name = name
+    console.scale = (1.1, 0.7, 0.35)
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    console.data.materials.append(material)
+
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(location[0], location[1], location[2] + 0.28))
+    console_panel = bpy.context.active_object
+    console_panel.name = f"{name}_Panel"
+    console_panel.scale = (0.75, 0.35, 0.09)
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    console_panel.data.materials.append(mat_cyan_signal)
+    link_obj(console)
+    link_obj(console_panel)
+    return console
+
 # -------------------------------------------------------------------------
 # 4. ARCHITECTURAL ZONES
 # -------------------------------------------------------------------------
@@ -174,10 +226,29 @@ portal_pts = [
 create_prism_from_2d("Zone_DanceFloor_Portal", portal_pts, -0.3, 0.3, mat_purple_glow)
 create_wall_perimeter("Zone_DanceFloor_Walls", portal_pts, 0.0, 6.5, 0.4, mat_green_metal, open_edges={3})
 
+# Broadcast signal and transmission core to match the integrated design narrative.
+create_signal_ring("Signal_Ring_Large", (4.8, -5.2, 0.18), 2.8, 0.14, mat_cyan_signal, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.8)
+create_signal_ring("Signal_Ring_Medium", (4.8, -5.2, 0.35), 1.9, 0.1, mat_neon_green, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.7)
+create_signal_ring("Signal_Ring_Small", (4.8, -5.2, 0.52), 1.1, 0.08, mat_purple_glow, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.4)
+
+bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.45, depth=2.4, location=(4.8, -5.2, 1.35))
+transmitter_core = bpy.context.active_object
+transmitter_core.name = "Signal_Transmitter_Core"
+transmitter_core.data.materials.append(mat_cyan_signal)
+link_obj(transmitter_core)
+
 # DJ booth - pulled inside the polygon so it clears the 0.2m wall inner face
 dj_pts = [(12.5, -3.9), (16.5, -3.7), (13.0, -5.7)]
 create_prism_from_2d("DJ_Stage_Platform", dj_pts, 0.0, 0.8, mat_green_metal)
 create_prism_from_2d("DJ_Console_Desk", [(13.5, -4.3), (15.3, -4.1), (13.8, -5.3)], 0.8, 1.1, mat_neon_green)
+
+bpy.ops.mesh.primitive_cube_add(size=1.0, location=(13.6, -4.3, 1.9))
+dj_monitor = bpy.context.active_object
+dj_monitor.name = "DJ_Broadcast_Monitor"
+dj_monitor.scale = (1.6, 0.12, 0.9)
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+dj_monitor.data.materials.append(mat_cyan_signal)
+link_obj(dj_monitor)
 
 # B. "LAIR" VIP ZONE (Elevated)
 lair_pts = [
@@ -188,6 +259,10 @@ lair_pts = [
 ]
 create_prism_from_2d("Zone_VIP_Lair_Floor", lair_pts, -0.3, 0.9, mat_dark_floor)
 create_wall_perimeter("Zone_VIP_Outer_Walls", lair_pts, 0.0, 6.5, 0.4, mat_green_metal, open_edges={1, 2})
+create_text_sign("Lair_Sign_VIP", "THE LAIR", (-7.5, -2.1, 3.1), mat_cyan_signal,
+                rotation=(math.radians(90.0), 0.0, math.radians(180.0)), scale=(1.2, 1.2, 1.2), size=0.25)
+create_text_sign("Lair_Sign_Sovereign", "SOVEREIGN", (-8.0, -3.6, 1.3), mat_crimson_void,
+                rotation=(math.radians(90.0), 0.0, 0.0), scale=(0.9, 0.9, 0.9), size=0.16)
 
 # Dance Floor -> VIP riser (4 steps, 0.6m rise)
 create_stairs("Stairs_Dance_To_VIP", (-1.4, -4.2, 0.0), 180.0, 3.2, 0.6, 1.8, 4, mat_green_metal)
@@ -209,6 +284,9 @@ spawn_pts = [
 ]
 create_prism_from_2d("Zone_Spawn_Lobby_Floor", spawn_pts, -0.3, 0.3, mat_dark_floor)
 create_wall_perimeter("Zone_Spawn_Walls", spawn_pts, 0.0, 6.5, 0.4, mat_green_metal, open_edges={2})
+create_wave_console("Wave_Console_Trigger", (-8.8, 4.6, 0.7), mat_green_metal)
+create_text_sign("Spawn_Sign_Threshold", "WELCOME TO THE LAIR", (-9.1, 3.1, 2.4), mat_cyan_signal,
+                rotation=(math.radians(90.0), 0.0, 0.0), scale=(0.8, 0.8, 0.8), size=0.18)
 
 # Mezzanine catwalk - extended west to the lobby wall so it can actually be reached
 mezz_pts = [

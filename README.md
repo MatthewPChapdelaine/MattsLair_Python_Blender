@@ -1,8 +1,8 @@
 # Matts Lair Python Blender
 
-This project contains a Blender Python script that procedurally generates a stylized social club / nightlife scene called "Matt's Lair" and exports it as an FBX for use in Unity and VRChat workflows.
+This project contains a Blender Python script that procedurally generates a stylized social club / broadcast lair called "Matt's Lair" and exports it as an FBX for use in Unity and VRChat workflows.
 
-The script is designed to be executed directly inside Blender's scripting editor. It creates a complete environment from code, including floors, walls, stairs, a mezzanine deck, neon trim, a glass roof, and a human-scale reference object.
+The script is designed to be executed directly inside Blender's scripting editor. It creates a complete environment from code, including a social spawn lobby, a central signal / portal floor, a DJ broadcast zone, a VIP lair lounge, a mezzanine deck, neon trim, a glass roof, and a human-scale reference object. The design now aligns with the updated concept of a club world that feels like a media-controlled, theatrical base of operations rather than a generic nightlife room.
 
 The purpose of this repository is not just to generate one static model, but to teach a practical workflow for:
 
@@ -19,15 +19,15 @@ The purpose of this repository is not just to generate one static model, but to 
 
 The generated environment includes:
 
-- a dance floor / portal zone
-- DJ stage and console area
-- a VIP / "Lair" lounge
-- a spawn lobby
-- a mezzanine catwalk
-- a skylight roof
-- green metallic architectural surfaces and neon accents
+- a threshold / spawn lobby with a wave console and welcoming signage
+- a signal-rich dance floor / portal zone serving as the main social core
+- DJ stage and console area with a broadcast monitor and transmitter core
+- a VIP / "Lair" lounge with elevated status and branding
+- a mezzanine catwalk with clear sight lines and access paths
+- a skylight roof and premium architectural shell
+- green metallic surfaces, cyan signal lighting, and crimson-heavy accent tones
 
-The whole environment is generated through a single script (`MattsLair.py`) rather than by manually placing objects in the Blender UI.
+The whole environment is generated through a single script (`MattsLair.py`) rather than by manually placing objects in the Blender UI, and it now reinforces the integrated design language described in the design document.
 
 ---
 
