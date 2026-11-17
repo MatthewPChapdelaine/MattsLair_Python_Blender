@@ -42,11 +42,11 @@ def create_pbr_material(name, base_color, metallic=0.0, roughness=0.5, emission_
                 bsdf.inputs["Emission"].default_value = emission_color
             if "Emission Strength" in bsdf.inputs:
                 bsdf.inputs["Emission Strength"].default_value = emission_strength
-    if alpha < 1.0 and hasattr(mat, "blend_method"):
-        try:
+    if alpha < 1.0:
+        if hasattr(mat, "surface_render_method"):
+            mat.surface_render_method = 'BLENDED'
+        elif hasattr(mat, "blend_method"):
             mat.blend_method = 'BLEND'
-        except AttributeError:
-            pass
     return mat
 
 mat_green_metal = create_pbr_material("Mat_Green_Metal", (0.04, 0.25, 0.06, 1.0), metallic=0.85, roughness=0.25)
@@ -227,9 +227,9 @@ create_prism_from_2d("Zone_DanceFloor_Portal", portal_pts, -0.3, 0.3, mat_purple
 create_wall_perimeter("Zone_DanceFloor_Walls", portal_pts, 0.0, 6.5, 0.4, mat_green_metal, open_edges={3})
 
 # Broadcast signal and transmission core to match the integrated design narrative.
-create_signal_ring("Signal_Ring_Large", (4.8, -5.2, 0.18), 2.8, 0.14, mat_cyan_signal, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.8)
-create_signal_ring("Signal_Ring_Medium", (4.8, -5.2, 0.35), 1.9, 0.1, mat_neon_green, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.7)
-create_signal_ring("Signal_Ring_Small", (4.8, -5.2, 0.52), 1.1, 0.08, mat_purple_glow, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.4)
+create_signal_ring("Signal_Ring_Large", (4.8, -5.2, 2.94), 2.8, 0.14, mat_cyan_signal, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.8)
+create_signal_ring("Signal_Ring_Medium", (4.8, -5.2, 2.0), 1.9, 0.1, mat_neon_green, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.7)
+create_signal_ring("Signal_Ring_Small", (4.8, -5.2, 1.18), 1.1, 0.08, mat_purple_glow, rotation=(math.radians(90.0), 0.0, 0.0), depth=0.4)
 
 bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.45, depth=2.4, location=(4.8, -5.2, 1.35))
 transmitter_core = bpy.context.active_object
@@ -284,7 +284,7 @@ spawn_pts = [
 ]
 create_prism_from_2d("Zone_Spawn_Lobby_Floor", spawn_pts, -0.3, 0.3, mat_dark_floor)
 create_wall_perimeter("Zone_Spawn_Walls", spawn_pts, 0.0, 6.5, 0.4, mat_green_metal, open_edges={2})
-create_wave_console("Wave_Console_Trigger", (-8.8, 4.6, 0.7), mat_green_metal)
+create_wave_console("Wave_Console_Trigger", (-8.8, 4.6, 0.175), mat_green_metal)
 create_text_sign("Spawn_Sign_Threshold", "WELCOME TO THE LAIR", (-9.1, 3.1, 2.4), mat_cyan_signal,
                 rotation=(math.radians(90.0), 0.0, 0.0), scale=(0.8, 0.8, 0.8), size=0.18)
 
@@ -305,11 +305,11 @@ create_rail("Rail_Mezz_South_E", (-7.7, 1.8), (11.0, 1.8), 3.2, 1.1, 0.12, mat_n
 create_rail("Rail_Mezz_East", (11.0, 1.8), (11.0, 6.0), 3.2, 1.1, 0.12, mat_neon_green)
 
 # Grand staircase: climbs north from the lobby and lands exactly on the deck edge at y=1.8
-create_stairs("Stairs_Lobby_To_Mezzanine", (-9.0, -1.4, 0.0), 0.0, 2.6, 3.2, 3.2, 16, mat_green_metal)
+create_stairs("Stairs_Lobby_To_Mezzanine", (-9.0, -1.4, 0.0), 90.0, 2.6, 3.2, 3.2, 16, mat_green_metal)
 
 # D. SKYLIGHT ROOF
 roof_pts = [(-16.5, 7.0), (18.5, 7.0), (18.5, -12.0), (-16.5, -12.0)]
-create_prism_from_2d("Club_Skylight_Ceiling", roof_pts, 6.5, 0.2, mat_glass)
+create_prism_from_2d("Club_Skylight_Ceiling", roof_pts, 6.52, 0.2, mat_glass)
 
 # E. SCALE REFERENCE (moved clear of the staircase, tucked under the deck)
 bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-12.0, 3.5, 0.875))
@@ -323,6 +323,45 @@ link_obj(avatar_ref)
 # -------------------------------------------------------------------------
 # 5. LIGHTMAP UV + NORMALS (HEADLESS-SAFE)
 # -------------------------------------------------------------------------
+def convert_text_objects_to_mesh():
+    for obj in list(collection.objects):
+        if obj.type != 'FONT':
+            continue
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(True)
+        bpy.context.view_layer.objects.active = obj
+        bpy.ops.object.convert(target='MESH')
+
+        mesh_obj = bpy.context.view_layer.objects.active
+        bm = bmesh.new()
+        bm.from_mesh(mesh_obj.data)
+        bmesh.ops.triangulate(bm, faces=list(bm.faces))
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(mesh_obj.data)
+        bm.free()
+
+
+def join_meshes_by_material():
+    objects_by_material = {}
+    for obj in collection.objects:
+        if obj.type != 'MESH' or obj.name == "VRC_Avatar_Scale_Ref_175cm":
+            continue
+        materials = tuple(obj.data.materials)
+        if len(materials) == 1 and materials[0] is not None:
+            objects_by_material.setdefault(materials[0].name, []).append(obj)
+
+    for material_name, objects in objects_by_material.items():
+        if len(objects) < 2:
+            continue
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in objects:
+            obj.select_set(True)
+        bpy.context.view_layer.objects.active = objects[0]
+        bpy.ops.object.join()
+        bpy.context.view_layer.objects.active.name = f"Combined_{material_name}"
+
+
+convert_text_objects_to_mesh()
 bpy.ops.object.select_all(action='DESELECT')
 
 for obj in collection.objects:
@@ -336,11 +375,23 @@ for obj in collection.objects:
         obj.data.uv_layers[0].name = "UVMap"
         obj.data.uv_layers[1].name = "LightmapUV"
 
-        obj.data.uv_layers.active_index = 1
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.mesh.normals_make_consistent(inside=False)
-        bpy.ops.uv.smart_project(angle_limit=math.radians(66.0), island_margin=0.03)
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+join_meshes_by_material()
+
+bpy.ops.object.select_all(action='DESELECT')
+for obj in collection.objects:
+    if obj.type == 'MESH' and obj.name != "VRC_Avatar_Scale_Ref_175cm":
+        bpy.ops.object.select_all(action='DESELECT')
+        obj.select_set(True)
+        bpy.context.view_layer.objects.active = obj
+        obj.data.uv_layers.active_index = 1
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.uv.smart_project(angle_limit=math.radians(66.0), island_margin=0.003)
         bpy.ops.object.mode_set(mode='OBJECT')
         obj.data.uv_layers.active_index = 0
 
@@ -355,6 +406,7 @@ for obj in collection.objects:
 def export_vrc_fbx(export_path=None):
     if export_path is None:
         export_path = os.path.join(os.path.expanduser("~"), "Matts_Lair_Club.fbx")
+    os.makedirs(os.path.dirname(os.path.abspath(export_path)), exist_ok=True)
     bpy.ops.export_scene.fbx(
         filepath=export_path,
         use_selection=True,

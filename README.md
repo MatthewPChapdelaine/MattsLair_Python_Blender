@@ -29,6 +29,10 @@ The purpose of this repository is not just to generate one static model, but to 
 - FBX export for Unity / VRChat
 - editable scene logic that can be customized for your own project
 
+## License
+
+This project is distributed under the GNU General Public License v3.0 only. See [LICENSE](./LICENSE) for the full terms.
+
 ---
 
 ## Project Overview
@@ -386,8 +390,8 @@ Before export, the script loops through every mesh in the collection and perform
 
 1. ensures at least two UV layers exist
 2. names them `UVMap` and `LightmapUV`
-3. sets the active UV layer to `LightmapUV`
-4. applies a smart UV projection
+3. joins eligible single-material meshes
+4. applies a smart UV projection to the joined meshes' `LightmapUV`
 5. then returns to the base UV channel
 
 ### Why this matters
@@ -397,6 +401,8 @@ Game projects often require:
 - standard UVs for texture mapping
 - a second UV channel for lightmap baking
 - consistent normals for smooth shading
+
+The generated lightmap UV is only a starting unwrap: this script does not bake lighting, target a texel density, or validate the charts in Unity. Inspect or regenerate the UVs in Unity before baking.
 
 ### The code
 
@@ -482,15 +488,15 @@ Use the generated asset inside a Unity project.
 
 1. Open a Unity project.
 2. Drag the exported FBX into the `Assets` folder.
-3. Unity will automatically import the mesh and materials.
-4. Inspect the model in the Scene view.
-5. Apply any additional adjustments if needed.
+3. Inspect the imported mesh and create or assign Unity materials; Blender shader graphs and emission strength are not carried over as equivalent Unity materials.
+4. Rebuild the metallic, emissive, and transparent glass appearance in materials supported by your render pipeline.
+5. Inspect the model in the Scene view and check scale, UVs, and lighting.
 
 ### Typical Unity workflow
 
 - set the model to static if it will not move
 - check scale in the importer window
-- configure materials for your pipeline
+- rebuild and assign materials for your render pipeline
 - optimize geometry if needed for performance
 
 ### VRChat-specific considerations

@@ -112,17 +112,10 @@ docker run --rm -e HOME=/out -v "$PWD/out:/out" mattslair
 
 * **Use OS Packages Over Tarballs**: Install Blender via apt-get to ensure all required X11 and OpenGL shared libraries are properly linked. Bare tarball extracts in minimal headless environments may fail on startup.
 * **Blender Version Compatibility**: The script targets 3.x–4.x, but API changes between versions (e.g., uv.smart\_project angle parameters in radians, Principled BSDF socket name shifts in 4.0–4.2) may require pinning Blender to version 4.1 or 4.2 if material/UV errors occur.
-* **Mesh Object Hierarchy**: The output FBX contains several hundred individual mesh objects (walls, rails, steps, signs). While suitable for VRChat scene organization, you may want to join or combine meshes in Unity for optimization.
+* **Mesh Object Hierarchy**: Before export, the generator converts and triangulates text signs, then joins eligible mesh objects by material. This reduces object and draw-call overhead but also means that objects sharing a material no longer have separate scene-level identities. The avatar scale reference remains separate and is excluded from export.
 * **FBX Addon Status**: If launching with \--factory-startup, io\_scene\_fbx remains enabled by default. Ensure bundled extensions are not disabled via custom preference files.
-* **Text Sign Conversion**: Text elements (`THE LAIR`, `WELCOME TO THE LAIR`) are font curves. Because the exporter filters for mesh object types, unconverted font objects are omitted. If text signs are required in the FBX, convert them to mesh objects before export:
-
-  ```python
-  bpy.ops.object.select_all(action='DESELECT')
-  for obj in bpy.context.scene.objects:
-      if obj.type == 'FONT':
-          obj.select_set(True)
-  bpy.ops.object.convert(target='MESH')
-  ```
+* **Material Rebuild in Unity**: FBX does not preserve Blender's Principled BSDF graph or its emission-strength multiplier. Unity does not automatically reconstruct the neon, glass, and metallic appearance. Create or assign Unity materials after import: use an appropriate metallic shader for the green surfaces, enable emission and choose HDR emission colors/intensities for neon, and enable transparency (and set rendering/sorting options) for the skylight glass. Check the result in the target render pipeline and bake or configure lighting in Unity as needed.
+* **Lightmap UVs**: The script creates a second UV layer as a starting point only. It does not bake lighting, pack for a target texel density, or validate the result in Unity. Inspect and, if necessary, regenerate lightmap UVs in the Unity model importer before baking.
 
 ## Verification
 
@@ -134,7 +127,7 @@ file "$PWD/Matts_Lair_Club.fbx"
 ls -lh "$PWD/Matts_Lair_Club.fbx"
 ```
 
-Then import the FBX into a clean Unity project or a VRChat SDK test scene and verify scale, mesh hierarchy, materials, UV layers, and collision behavior. The successful creation of a file does not by itself verify that every sign, material, or engine import setting is correct.
+Then import the FBX into a clean Unity project or a VRChat SDK test scene and verify that the converted signs are present, as well as scale, the joined mesh hierarchy, rebuilt materials, UV layers, and collision behavior. The successful creation of a file does not by itself verify the appearance or engine import settings.
 
 ## GDevelop 5 Web and Desktop Workflow
 
